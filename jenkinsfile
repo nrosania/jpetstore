@@ -1,6 +1,6 @@
 pipeline
 {
-  agent { label 'master' }
+  agent any
   options {
     disableConcurrentBuilds()
     buildDiscarder(logRotator(artifactDaysToKeepStr: '7', artifactNumToKeepStr: '5', daysToKeepStr: '7', numToKeepStr: '5'))
@@ -87,8 +87,8 @@ pipeline
     stage('Git Tag') {
        steps
        {
-	 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'thpgithub-Login', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD']]) {
-		 sh("git tag -a ${VERSION} -m 'Jenkins'")
+	 withCredentials([[$class: 'UsernamePasswordMultiBinding', credentialsId: 'JENKINS CREDENTIALS ID', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD']]) {
+		 sh("git tag -a ${VERSION} -m")
 	    sh("git push http://${env.GIT_USERNAME}:${env.GIT_PASSWORD}@GITHUB PROJECT URL HERE --tags")
          }
 	}	
@@ -175,7 +175,7 @@ pipeline
         
     stage('Deploy Application'){
         steps{
-                withCredentials([usernameColonPassword(credentialsId: 'UCD-Login', variable: 'UCDLOGIN')]) {
+                withCredentials([usernameColonPassword(credentialsId: 'JENKINS UCD CREDENTIALS ID', variable: 'UCDLOGIN')]) {
                     sh 'curl --fail -k -u $UCDLOGIN $DEPLOY_REQPROCESS -X PUT -d @applicationDeploy.json'
                 }//End with credentials
         }
@@ -183,7 +183,7 @@ pipeline
    stage('Update JIRA') {
        steps{
 	    withEnv(['JIRA_SITE=JIRAPROD']) {
-		jiraAddComment idOrKey: 'AD-553', comment: 'This build and artifact promotion was successful. The deployment process has been started in UrbanCode Deploy.'
+		jiraAddComment idOrKey: 'JIRA ISSUE INFO', comment: 'This build and artifact promotion was successful. The deployment process has been started in UrbanCode Deploy.'
 	     }
 	}	
     }
